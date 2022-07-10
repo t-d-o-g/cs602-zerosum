@@ -14,8 +14,8 @@ public class Zerosum extends Thread {
 	public void gainCalories() {
 		synchronized(this) {
 			for (int i = 0; i < dailyCalories; i++) {
-				balance += 1;
 				System.out.println(Thread.currentThread().getName() + " - Gain calories " + i + ", calorie balance " + balance);
+				balance += 1;
 				try {
 					sleep(delay);
 					if (balance > 0) {
@@ -32,8 +32,8 @@ public class Zerosum extends Thread {
 	public void burnCalories() {
 		synchronized(this) {
 			for (int i = 0; i < dailyCalories; i++) {
-				balance -= 1;
 				System.out.println(Thread.currentThread().getName() + " - Burn calories " + i + ", calorie balance " + balance);
+				balance -= 1;
 				try {
 					sleep(delay);
 					if (balance < 0) {
