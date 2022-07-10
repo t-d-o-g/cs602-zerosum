@@ -4,38 +4,64 @@ import java.lang.InterruptedException;
 
 public class Zerosum extends Thread {
 	protected int dailyCalories, delay;
-	private String gainOrBurn;
 	private static int balance = 0;
 
-	public Zerosum(int dailyCalories, String gainOrBurn, int delay) {
+	public Zerosum(int dailyCalories, int delay) {
 		this.dailyCalories = dailyCalories;
-		this.gainOrBurn = gainOrBurn;
 		this.delay = delay; 
 	}
-
-	public void run() {
-		for(int i = 0; i < dailyCalories; i++) {
-			try {
-				synchronized(this) {
-					if (gainOrBurn.equals("gain")) {
-						gainCalories();
-						System.out.println(Thread.currentThread().getName() + " - Gain calories " + i + ", calorie balance " + balance + ", synchronized " + Thread.holdsLock(this));
-					} else if (gainOrBurn.equals("burn")) {
-						burnCalories();
-						System.out.println(Thread.currentThread().getName() + " - Burn calories " + i + ", calorie balance " + balance + ", synchronized " + Thread.holdsLock(this));
-					} else {
-						System.out.println("Not gaining or burning any calories today");
+	
+	public void gainCalories() {
+		synchronized(this) {
+			for (int i = 0; i < dailyCalories; i++) {
+				balance += 1;
+				System.out.println(Thread.currentThread().getName() + " - Gain calories " + i + ", calorie balance " + balance);
+				try {
+					sleep(delay);
+					if (balance > 0) {
+						wait();
 					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+				notify();
 			}
 		}
 	}
 
+	public void burnCalories() {
+		synchronized(this) {
+			for (int i = 0; i < dailyCalories; i++) {
+				balance -= 1;
+				System.out.println(Thread.currentThread().getName() + " - Burn calories " + i + ", calorie balance " + balance);
+				try {
+					sleep(delay);
+					if (balance < 0) {
+						wait();
+					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				notify();
+			}
+		}
+	}
+	
 	public static void main(String args[]) {
-		Thread gainCalories = new Zerosum(1000, "gain", 10);
-		Thread burnCalories = new Zerosum(1000, "burn", 10);
+		Zerosum zs = new Zerosum(1000, 10);
+
+		Thread gainCalories = new Thread(new Runnable() {
+			public void run() {
+				zs.gainCalories();
+			}
+		});
+		
+		Thread burnCalories = new Thread(new Runnable() {
+			public void run() {
+				zs.burnCalories();
+			}
+		});
+
 		gainCalories.start();
 		burnCalories.start();
 
@@ -46,15 +72,5 @@ public class Zerosum extends Thread {
 		  e.printStackTrace();	
 		}
 		System.out.println("Final Calorie Balance: " + balance);
-	}
-
-	public void gainCalories() throws InterruptedException {
-		balance += 1;
-		sleep(delay);
-	}
-
-	public void burnCalories() throws InterruptedException {
-		balance -= 1;
-		sleep(delay);
 	}
 } 
