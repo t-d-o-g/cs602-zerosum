@@ -18,10 +18,10 @@ public class Zerosum extends Thread {
 			try {
 				if (gainOrBurn.equals("gain")) {
 					gainCalories();
-					System.out.println(Thread.currentThread().getName() + " - AFTER GAIN BALANCE" + i + ": " + balance);
+					System.out.println(Thread.currentThread().getName() + " - Gain calories balance" + i + ": " + balance + ", synchronized " + Thread.holdsLock(this));
 				} else if (gainOrBurn.equals("burn")) {
 					burnCalories();
-					System.out.println(Thread.currentThread().getName() + " - AFTER BURN BALANCE" + i + ": " + balance);
+					System.out.println(Thread.currentThread().getName() + " - Burn calories balance" + i + ": " + balance + ", synchronized " + Thread.holdsLock(this));
 				} else {
 					System.out.println("Not gaining or burning any calories today");
 				}
@@ -36,6 +36,14 @@ public class Zerosum extends Thread {
 		Thread burnCalories = new Zerosum(1000, "burn", 10);
 		gainCalories.start();
 		burnCalories.start();
+
+		try {
+			gainCalories.join();
+			burnCalories.join();
+		} catch (Exception e) {
+		  e.printStackTrace();	
+		}
+		System.out.println("Final Calorie Balance: " + balance);
 	}
 
 	public void gainCalories() throws InterruptedException {
