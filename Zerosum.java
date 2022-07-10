@@ -19,10 +19,10 @@ public class Zerosum extends Thread {
 				synchronized(this) {
 					if (gainOrBurn.equals("gain")) {
 						gainCalories();
-						System.out.println(Thread.currentThread().getName() + " - Gain calories balance" + i + ": " + balance + ", synchronized " + Thread.holdsLock(this));
+						System.out.println(Thread.currentThread().getName() + " - Gain calories " + i + ", calorie balance " + balance + ", synchronized " + Thread.holdsLock(this));
 					} else if (gainOrBurn.equals("burn")) {
 						burnCalories();
-						System.out.println(Thread.currentThread().getName() + " - Burn calories balance" + i + ": " + balance + ", synchronized " + Thread.holdsLock(this));
+						System.out.println(Thread.currentThread().getName() + " - Burn calories " + i + ", calorie balance " + balance + ", synchronized " + Thread.holdsLock(this));
 					} else {
 						System.out.println("Not gaining or burning any calories today");
 					}
