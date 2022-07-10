@@ -16,14 +16,16 @@ public class Zerosum extends Thread {
 	public void run() {
 		for(int i = 0; i < dailyCalories; i++) {
 			try {
-				if (gainOrBurn.equals("gain")) {
-					gainCalories();
-					System.out.println(Thread.currentThread().getName() + " - Gain calories balance" + i + ": " + balance + ", synchronized " + Thread.holdsLock(this));
-				} else if (gainOrBurn.equals("burn")) {
-					burnCalories();
-					System.out.println(Thread.currentThread().getName() + " - Burn calories balance" + i + ": " + balance + ", synchronized " + Thread.holdsLock(this));
-				} else {
-					System.out.println("Not gaining or burning any calories today");
+				synchronized(this) {
+					if (gainOrBurn.equals("gain")) {
+						gainCalories();
+						System.out.println(Thread.currentThread().getName() + " - Gain calories balance" + i + ": " + balance + ", synchronized " + Thread.holdsLock(this));
+					} else if (gainOrBurn.equals("burn")) {
+						burnCalories();
+						System.out.println(Thread.currentThread().getName() + " - Burn calories balance" + i + ": " + balance + ", synchronized " + Thread.holdsLock(this));
+					} else {
+						System.out.println("Not gaining or burning any calories today");
+					}
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
